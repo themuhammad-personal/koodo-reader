@@ -8,6 +8,8 @@ import { Trans } from "react-i18next";
 import ConfigUtil from "../../../utils/file/configUtil";
 import BookUtil from "../../../utils/file/bookUtil";
 import Note from "../../../models/Note";
+import { withRouter } from "react-router-dom";
+import { isMobileScreen } from "../../../utils/commonMobile";
 
 class NoteList extends React.Component<NoteListProps, NoteListState> {
   constructor(props: NoteListProps) {
@@ -17,6 +19,7 @@ class NoteList extends React.Component<NoteListProps, NoteListState> {
       currentSelectedBook: "",
       bookNamesMap: {},
       cardList: [],
+      showTagFilter: false,
     };
   }
   async UNSAFE_componentWillMount() {
@@ -74,6 +77,18 @@ class NoteList extends React.Component<NoteListProps, NoteListState> {
     );
     this.setState({ tag, cardList });
   };
+  toggleTagFilter = () => {
+    this.setState({ showTagFilter: !this.state.showTagFilter });
+  };
+  selectTab = (tab: string) => {
+    if (this.props.history) {
+      if (tab === "note") this.props.history.push("/manager/note");
+      else this.props.history.push("/manager/highlight");
+    } else {
+      // fallback: set state locally
+      this.setState({ cardList: tab === "note" ? this.props.notes : this.props.highlights });
+    }
+  };
   render() {
     const noteProps = {
       cards: this.props.isSearch
@@ -84,6 +99,7 @@ class NoteList extends React.Component<NoteListProps, NoteListState> {
       mode: this.props.tabMode,
       bookNamesMap: this.state.bookNamesMap,
     };
+    const mobile = isMobileScreen();
     return (
       <div
         className="note-list-container-parent"
@@ -93,60 +109,92 @@ class NoteList extends React.Component<NoteListProps, NoteListState> {
             : {}
         }
       >
-        <div className="note-list-header">
-          <div className="note-tags" style={{ width: "calc(100% - 240px)" }}>
-            <NoteTag {...({ handleTag: this.handleTag } as any)} />
-          </div>
-          {noteProps.cards.length > 0 && (
-            <div style={{ marginRight: "10px", marginTop: "3px" }}>
-              <span className="note-list-filter-label">
-                <Trans>Filter by book</Trans>
-              </span>
-
-              <select
-                name=""
-                className="lang-setting-dropdown"
-                onChange={async (event) => {
-                  this.setState({
-                    currentSelectedBook: event.target.value,
-                    cardList: await ConfigUtil.getNotesByBookKeyAndTypeWithSort(
-                      event.target.value,
-                      this.props.tabMode
-                    ),
-                  });
-                }}
-              >
-                {[
-                  { value: "", label: this.props.t("Please select") },
-                  ...(this.props.tabMode === "note"
-                    ? this.props.notes
-                    : this.props.highlights
-                  )
-                    .map((note) => {
-                      return {
-                        label:
-                          this.state.bookNamesMap[note.bookKey] ||
-                          "Unknown book",
-                        value: note.bookKey,
-                      };
-                    })
-                    .filter(
-                      (item, index, self) =>
-                        self.findIndex((t) => t.label === item.label) === index
-                    ),
-                ].map((item) => (
-                  <option
-                    value={item.value}
-                    key={item.value}
-                    className="lang-setting-option"
-                  >
-                    {item.label}
-                  </option>
-                ))}
-              </select>
+        {/* Header: desktop vs mobile */}
+        {!mobile ? (
+          <div className="note-list-header">
+            <div className="note-tags" style={{ width: "calc(100% - 240px)" }}>
+              <NoteTag {...({ handleTag: this.handleTag } as any)} />
             </div>
-          )}
-        </div>
+            {noteProps.cards.length > 0 && (
+              <div style={{ marginRight: "10px", marginTop: "3px" }}>
+                <span className="note-list-filter-label">
+                  <Trans>Filter by book</Trans>
+                </span>
+
+                <select
+                  name=""
+                  className="lang-setting-dropdown"
+                  onChange={async (event) => {
+                    this.setState({
+                      currentSelectedBook: event.target.value,
+                      cardList: await ConfigUtil.getNotesByBookKeyAndTypeWithSort(
+                        event.target.value,
+                        this.props.tabMode
+                      ),
+                    });
+                  }}
+                >
+                  {[
+                    { value: "", label: this.props.t("Please select") },
+                    ...(this.props.tabMode === "note"
+                      ? this.props.notes
+                      : this.props.highlights
+                    )
+                      .map((note) => {
+                        return {
+                          label:
+                            this.state.bookNamesMap[note.bookKey] ||
+                            "Unknown book",
+                          value: note.bookKey,
+                        };
+                      })
+                      .filter(
+                        (item, index, self) =>
+                          self.findIndex((t) => t.label === item.label) === index
+                      ),
+                  ].map((item) => (
+                    <option
+                      value={item.value}
+                      key={item.value}
+                      className="lang-setting-option"
+                    >
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="note-list-mobile-header">
+            <div className="note-list-mobile-tabs">
+              <button
+                className={
+                  "mobile-tab-button " + (this.props.tabMode === "note" ? "active" : "")
+                }
+                onClick={() => this.selectTab("note")}
+              >
+                {this.props.t("Notes")}
+              </button>
+              <button
+                className={
+                  "mobile-tab-button " + (this.props.tabMode === "highlight" ? "active" : "")
+                }
+                onClick={() => this.selectTab("highlight")}
+              >
+                {this.props.t("Highlights")}
+              </button>
+            </div>
+            <div className="note-list-mobile-actions">
+              <button className="icon-filter mobile-filter" onClick={this.toggleTagFilter} aria-label="filter" />
+            </div>
+            {this.state.showTagFilter && (
+              <div className="note-tags-mobile">
+                <NoteTag {...({ handleTag: this.handleTag } as any)} />
+              </div>
+            )}
+          </div>
+        )}
 
         {noteProps.cards.length === 0 ? (
           <div
@@ -169,4 +217,4 @@ class NoteList extends React.Component<NoteListProps, NoteListState> {
   }
 }
 
-export default NoteList;
+export default withRouter(NoteList as any);
