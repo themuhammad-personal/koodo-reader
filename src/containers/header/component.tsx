@@ -756,7 +756,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
             </span>
           </div>
           <div
-            className="setting-icon-container"
+            className="setting-icon-container header-setting-icon-btn"
             onClick={() => {
               this.props.handleSetting(true);
               this.props.handleAbout(false);

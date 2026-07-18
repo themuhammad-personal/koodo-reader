@@ -54,6 +54,13 @@
     overflow-y: auto;
     width: 100%;
   }
+  .setting-close-container {
+    top: 8px !important;
+    right: 8px !important;
+    z-index: 30 !important;
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 50%;
+  }
 }
 .setting-dialog-sidebar {
   width: 180px;

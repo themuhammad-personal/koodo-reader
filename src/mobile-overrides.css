@@ -5,6 +5,37 @@
   .header {
     margin-left: 0 !important;
   }
+  .header-setting-icon-btn {
+    display: none !important;
+  }
+  .header-report-container {
+    display: none !important;
+  }
+  .header-search-container {
+    position: absolute !important;
+    top: 20px !important;
+    left: 10px !important;
+    margin-left: 0 !important;
+    width: calc(100% - 130px) !important;
+  }
+  .setting-icon-parrent {
+    position: absolute !important;
+    top: 12px !important;
+    right: 0 !important;
+    left: auto !important;
+    margin-left: 0 !important;
+  }
+  .import-from-cloud {
+    bottom: 130px !important;
+    top: auto !important;
+  }
+  .import-from-local {
+    bottom: 74px !important;
+    top: auto !important;
+  }
+  .note-tags {
+    width: calc(100% - 20px) !important;
+  }
   .book-list-container-parent {
     left: 0 !important;
     width: 100% !important;
@@ -23,5 +54,11 @@
     left: 0 !important;
     width: 100vw !important;
     height: calc(100vh - 75px - 56px) !important;
+  }
+  .backup-page-container {
+    width: 92vw !important;
+    left: 4vw !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
   }
 }

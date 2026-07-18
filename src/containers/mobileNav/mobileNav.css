@@ -36,4 +36,21 @@
     font-size: 11px;
     margin-top: 4px;
   }
+  .mobile-shelf-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: 20px;
+    bottom: 72px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #d4537e;
+    color: #ffffff;
+    font-size: 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 16;
+    cursor: pointer;
+  }
 }

@@ -154,7 +154,7 @@ class LocalFileDialog extends React.Component<
                 >
                   <Trans>Authorize</Trans>
                 </div>
-              ) : (
+              ) : LocalFileManager.isSupported() ? (
                 <div
                   className="add-dialog-confirm"
                   onClick={() => {
@@ -163,7 +163,7 @@ class LocalFileDialog extends React.Component<
                 >
                   <Trans>Select folder</Trans>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         ) : (

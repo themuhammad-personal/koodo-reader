@@ -1,7 +1,8 @@
 import { connect } from "react-redux";
-import { handleSetting } from "../../store/actions";
-import { handleMode } from "../../store/actions";
+import { handleSetting, handleMode, handleShelf } from "../../store/actions";
+import { handleFetchBooks } from "../../store/actions/manager";
 import { stateType } from "../../store";
+import { withTranslation } from "react-i18next";
 import MobileNav from "./component";
 
 const mapStateToProps = (state: stateType) => {
@@ -13,6 +14,11 @@ const mapStateToProps = (state: stateType) => {
 const mapDispatchToProps = {
   handleSetting,
   handleMode,
+  handleShelf,
+  handleFetchBooks,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(MobileNav);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withTranslation()(MobileNav as any) as any);
