@@ -49,6 +49,7 @@ import packageJson from "../../../package.json";
 import { getTempToken, updateUserConfig } from "../../utils/request/user";
 import i18n from "../../i18n";
 import { getNotification } from "../../utils/request/common";
+import { isMobileScreen } from "../../utils/commonMobile";
 declare var window: any;
 
 class Header extends React.Component<HeaderProps, HeaderState> {
@@ -159,22 +160,32 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       });
     } else {
       upgradeConfig();
-      const status = await LocalFileManager.getPermissionStatus();
-      if (
-        !ConfigService.getItem("isUseLocal") &&
-        LocalFileManager.isSupported()
-      ) {
-        this.props.handleLocalFileDialog(true);
-      } else if (
-        ConfigService.getItem("isUseLocal") === "yes" &&
-        !status.directoryName
-      ) {
-        this.props.handleLocalFileDialog(true);
-      } else if (
-        ConfigService.getItem("isUseLocal") === "yes" &&
-        (status.needsReauthorization || !status.hasAccess)
-      ) {
-        this.props.handleLocalFileDialog(true);
+
+      // Mobile: skip the broken local file dialog and prefer IndexedDB
+      if (isMobileScreen()) {
+        try {
+          ConfigService.setItem("isUseLocal", "no");
+        } catch (e) {
+          console.error("Failed to set isUseLocal on mobile:", e);
+        }
+      } else {
+        const status = await LocalFileManager.getPermissionStatus();
+        if (
+          !ConfigService.getItem("isUseLocal") &&
+          LocalFileManager.isSupported()
+        ) {
+          this.props.handleLocalFileDialog(true);
+        } else if (
+          ConfigService.getItem("isUseLocal") === "yes" &&
+          !status.directoryName
+        ) {
+          this.props.handleLocalFileDialog(true);
+        } else if (
+          ConfigService.getItem("isUseLocal") === "yes" &&
+          (status.needsReauthorization || !status.hasAccess)
+        ) {
+          this.props.handleLocalFileDialog(true);
+        }
       }
     }
     this.resizeHandler = throttle(() => {
@@ -449,7 +460,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       }
       toast(
         this.props.t(
-          "In order to let you directly manage your data in Google Drive, we have deprecated the old Google Drive token. Please reauthorize Google Drive in the settings. Your new data will be stored in the root directory of your Google Drive, and you can manage it directly in the Google Drive web interface."
+          "In order to let you directly manage your data in Google Drive, we have deprecated the old Google Drive token. Please reauthorize Google Drive in the settings. Your new data will be sto[...]"
         ),
         { duration: 4000 }
       );
@@ -609,7 +620,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
               ) +
               " " +
               this.props.t(
-                "Your reading progress, notes, highlights, bookmarks, and other data will be stored and synced through our cloud service. Your books and covers will still be synced by your added data sources. All your data will be encrypted and stored securely in our cloud. You can disable this feature anytime in the settings."
+                "Your reading progress, notes, highlights, bookmarks, and other data will be stored and synced through our cloud service. Your books and covers will still be synced by your added [...]
               )
             }</p>`
           );
