@@ -1,11 +1,23 @@
 import { ConfigService } from "../../assets/lib/kookit-extra-browser.min";
 import toast from "react-hot-toast";
+import { isMobileScreen } from "../../utils/commonMobile";
+import { showMobileCreateShelf } from "./mobileCreateShelf";
 
 declare var window: any;
 
 export async function openCreateShelfDialog(t?: any) {
   return new Promise<boolean>((resolve) => {
     try {
+      if (isMobileScreen()) {
+        showMobileCreateShelf(t)
+          .then((created) => resolve(created))
+          .catch((e) => {
+            console.error("showMobileCreateShelf error:", e);
+            resolve(false);
+          });
+        return;
+      }
+
       window.vex.dialog.buttons.YES.text = t ? t("Confirm") : "Confirm";
       window.vex.dialog.buttons.NO.text = t ? t("Cancel") : "Cancel";
       window.vex.dialog.prompt({
