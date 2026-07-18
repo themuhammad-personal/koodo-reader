@@ -34,6 +34,7 @@ import {
   getChatLocale,
   getTaskStats,
   getWebsiteUrl,
+  isMobileScreen,
   openInBrowser,
   removeChatBox,
   resetKoodoSync,
@@ -157,6 +158,14 @@ class Header extends React.Component<HeaderProps, HeaderState> {
           ConfigService.setReaderConfig("isAllowNotification", "yes");
         }
       });
+    } else if (isMobileScreen()) {
+      // On mobile (Android WebView) the File System Access API does not work,
+      // so the "Never lose your data" local-file popup is useless. Skip it and
+      // keep all data in IndexedDB by locking isUseLocal to "no".
+      upgradeConfig();
+      if (!ConfigService.getItem("isUseLocal")) {
+        ConfigService.setItem("isUseLocal", "no");
+      }
     } else {
       upgradeConfig();
       const status = await LocalFileManager.getPermissionStatus();
@@ -727,12 +736,14 @@ class Header extends React.Component<HeaderProps, HeaderState> {
             )}
           </div>
         )}
-        <div
-          className="header-search-container"
-          style={this.props.isCollapsed ? { width: "369px" } : {}}
-        >
-          <SearchBox />
-        </div>
+        {!isMobileScreen() && (
+          <div
+            className="header-search-container"
+            style={this.props.isCollapsed ? { width: "369px" } : {}}
+          >
+            <SearchBox />
+          </div>
+        )}
         <div
           className="setting-icon-parrent"
           style={this.props.isCollapsed ? { marginLeft: "430px" } : {}}

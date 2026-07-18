@@ -1,0 +1,231 @@
+.mobile-header {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .mobile-header {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 18;
+  }
+
+  .mobile-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    background-color: rgba(20, 20, 20, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .mobile-header-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55%;
+  }
+
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mobile-header-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: inherit;
+    font-size: 19px;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.15s;
+  }
+
+  .mobile-header-icon-btn:active {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .mobile-header-add-btn {
+    background-color: #d4537e;
+    color: #ffffff;
+  }
+
+  .mobile-header-add-btn:active {
+    background-color: #b83e67;
+  }
+
+  /* Search overlay */
+  .mobile-search-overlay {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 60px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    background-color: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .mobile-search-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+    color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .mobile-search-field {
+    flex: 1;
+    position: relative;
+  }
+
+  .mobile-search-field .header-search-box {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* Bottom sheet */
+  .mobile-sheet-scrim {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    display: flex;
+    align-items: flex-end;
+    animation: mobile-sheet-fade 0.15s ease-out;
+  }
+
+  .mobile-sheet {
+    width: 100%;
+    background-color: #23272a;
+    border-radius: 24px 24px 0 0;
+    padding: 8px 16px calc(20px + env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+    animation: mobile-sheet-up 0.2s ease-out;
+  }
+
+  .mobile-sheet-handle {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.25);
+    margin: 8px auto 14px;
+  }
+
+  .mobile-sheet-title {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.55;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 4px 4px 10px;
+  }
+
+  .mobile-sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 48px;
+    border: none;
+    background-color: transparent;
+    color: inherit;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 12px;
+  }
+
+  .mobile-sheet-item:active {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-sheet-item-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+    opacity: 0.9;
+  }
+
+  .mobile-view-mode-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .mobile-view-mode-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 68px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    background-color: transparent;
+    color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.6;
+  }
+
+  .mobile-view-mode-item.active {
+    opacity: 1;
+    border-color: #d4537e;
+    background-color: rgba(212, 83, 126, 0.15);
+  }
+
+  .mobile-view-mode-label {
+    font-size: 12px;
+  }
+}
+
+@keyframes mobile-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes mobile-sheet-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

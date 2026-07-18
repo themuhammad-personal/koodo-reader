@@ -1,4 +1,4 @@
-﻿import Plugin from "../models/Plugin";
+import Plugin from "../models/Plugin";
 import { isElectron } from "react-device-detect";
 import CryptoJS from "crypto-js";
 import {
@@ -393,6 +393,23 @@ export const fetchFileFromPath = (filePath: string) => {
 
 export const sleep = (time: number) => {
   return new Promise((resolve) => setTimeout(resolve, time));
+};
+
+/**
+ * Returns true when the app is running on a narrow (mobile / Android) screen.
+ * Used to gate mobile-only behavior at the JS level so the desktop/web UI
+ * stays untouched. Mirrors the `max-width: 700px` CSS breakpoint.
+ */
+export const isMobileScreen = (): boolean => {
+  if (typeof window === "undefined") return false;
+  try {
+    if (window.matchMedia) {
+      return window.matchMedia("(max-width: 700px)").matches;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return document.body.clientWidth <= 700;
 };
 
 /** Default interval (ms) for window resize handlers. */

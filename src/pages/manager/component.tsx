@@ -2,6 +2,7 @@ import React from "react";
 import Sidebar from "../../containers/sidebar";
 import MobileNav from "../../containers/mobileNav";
 import Header from "../../containers/header";
+import MobileHeader from "../../containers/mobileHeader";
 import DeleteDialog from "../../components/dialogs/deleteDialog";
 import EditDialog from "../../components/dialogs/editDialog";
 import AddDialog from "../../components/dialogs/addDialog";
@@ -298,6 +299,7 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
           }}
         />
         <Header {...({ handleDrag: this.handleDrag } as any)} />
+        <MobileHeader />
         {this.props.isOpenDeleteDialog && <DeleteDialog />}
         {this.props.isOpenEditDialog && <EditDialog />}
         {this.props.isOpenAddDialog && <AddDialog />}
