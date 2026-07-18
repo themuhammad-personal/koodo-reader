@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
 import { ConfigService } from "../../assets/lib/kookit-extra-browser.min";
 import { openCreateShelfDialog } from "../dialogs/createShelfDialog/openCreateShelfDialog";
@@ -18,11 +18,19 @@ const MobileShelfChips: React.FC<Props> = ({
   handleMode,
   handleSortShelfDialog,
 }) => {
-  const shelfList = ConfigService.getAllMapConfig("shelfList") || {};
-  const sorted = ConfigService.getAllListConfig("sortedShelfList") || [];
-  const titles = Array.from(new Set([...sorted, ...Object.keys(shelfList)]));
-
+  const [titles, setTitles] = useState<string[]>([]);
   const longPressTimer = useRef<number | null>(null);
+
+  const loadShelves = () => {
+    const shelfList = ConfigService.getAllMapConfig("shelfList") || {};
+    const sorted = ConfigService.getAllListConfig("sortedShelfList") || [];
+    const merged = Array.from(new Set([...sorted, ...Object.keys(shelfList)]));
+    setTitles(merged);
+  };
+
+  useEffect(() => {
+    loadShelves();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -33,8 +41,8 @@ const MobileShelfChips: React.FC<Props> = ({
     };
   }, []);
 
-  const onSelect = (shelf: string) => {
-    if (handleShelf) handleShelf(shelf);
+  const onSelect = (s: string) => {
+    if (handleShelf) handleShelf(s);
     if (handleMode) handleMode("shelf");
     history?.push("/manager/shelf");
   };
@@ -42,8 +50,8 @@ const MobileShelfChips: React.FC<Props> = ({
   const onCreate = async () => {
     const res = await openCreateShelfDialog(t);
     if (res) {
-      // refresh shelves list in a simple way
-      window.location.reload();
+      // refresh shelf list without full reload
+      loadShelves();
     }
   };
 
@@ -52,7 +60,6 @@ const MobileShelfChips: React.FC<Props> = ({
   };
 
   const startLongPress = (shelf: string) => {
-    // 600ms long press
     longPressTimer.current = window.setTimeout(() => {
       onManage(shelf);
       longPressTimer.current = null;
@@ -85,7 +92,11 @@ const MobileShelfChips: React.FC<Props> = ({
           {t ? t(s) : s}
         </button>
       ))}
-      <button className="shelf-chip add-chip" onClick={onCreate} aria-label={t ? t("New shelf") : "New shelf"}>
+      <button
+        className="shelf-chip add-chip"
+        onClick={onCreate}
+        aria-label={t ? t("New shelf") : "New shelf"}
+      >
         +
       </button>
     </div>
