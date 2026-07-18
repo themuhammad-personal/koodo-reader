@@ -31,7 +31,7 @@ jobs:
         run: yarn build
 
       - name: Install Capacitor
-        run: npm install --no-save @capacitor/core @capacitor/android @capacitor/cli
+        run: yarn add --dev --ignore-scripts --network-timeout 600000 @capacitor/core@^6 @capacitor/android@^6 @capacitor/cli@^6
 
       - name: Add Android platform
         run: npx cap add android
