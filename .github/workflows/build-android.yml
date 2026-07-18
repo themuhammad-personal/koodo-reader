@@ -27,6 +27,15 @@ jobs:
         # (native module rebuild) which isn't needed for the web/Android build
         run: yarn install --ignore-scripts --network-timeout 600000
 
+      - name: Use a stable debug signing key
+        # Without this, every CI run gets a fresh random debug keystore,
+        # so a newly built APK cannot be installed over a previously
+        # installed one (Android blocks it as a signature mismatch) and
+        # installs silently fail, leaving the old app in place.
+        run: |
+          mkdir -p ~/.android
+          cp android-debug.keystore ~/.android/debug.keystore
+
       - name: Build production web bundle
         run: yarn build
 
