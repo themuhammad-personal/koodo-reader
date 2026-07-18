@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import "./style.css";
 import { ConfigService } from "../../assets/lib/kookit-extra-browser.min";
 import { openCreateShelfDialog } from "../dialogs/createShelfDialog/openCreateShelfDialog";
@@ -22,6 +22,17 @@ const MobileShelfChips: React.FC<Props> = ({
   const sorted = ConfigService.getAllListConfig("sortedShelfList") || [];
   const titles = Array.from(new Set([...sorted, ...Object.keys(shelfList)]));
 
+  const longPressTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) {
+        window.clearTimeout(longPressTimer.current);
+        longPressTimer.current = null;
+      }
+    };
+  }, []);
+
   const onSelect = (shelf: string) => {
     if (handleShelf) handleShelf(shelf);
     if (handleMode) handleMode("shelf");
@@ -31,14 +42,27 @@ const MobileShelfChips: React.FC<Props> = ({
   const onCreate = async () => {
     const res = await openCreateShelfDialog(t);
     if (res) {
-      // refresh
+      // refresh shelves list in a simple way
       window.location.reload();
     }
   };
 
-  const onManage = (e: React.MouseEvent, shelf: string) => {
-    e.preventDefault();
+  const onManage = (shelf: string) => {
     if (handleSortShelfDialog) handleSortShelfDialog(true);
+  };
+
+  const startLongPress = (shelf: string) => {
+    // 600ms long press
+    longPressTimer.current = window.setTimeout(() => {
+      onManage(shelf);
+      longPressTimer.current = null;
+    }, 600) as unknown as number;
+  };
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
   };
 
   return (
@@ -48,12 +72,21 @@ const MobileShelfChips: React.FC<Props> = ({
           key={s}
           className="shelf-chip"
           onClick={() => onSelect(s)}
-          onContextMenu={(e) => onManage(e, s)}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            onManage(s);
+          }}
+          onTouchStart={() => startLongPress(s)}
+          onTouchEnd={() => clearLongPress()}
+          onTouchMove={() => clearLongPress()}
+          onTouchCancel={() => clearLongPress()}
+          aria-label={t ? t(s) : s}
         >
           {t ? t(s) : s}
         </button>
       ))}
-      <button className="shelf-chip add-chip" onClick={onCreate}>+
+      <button className="shelf-chip add-chip" onClick={onCreate} aria-label={t ? t("New shelf") : "New shelf"}>
+        +
       </button>
     </div>
   );
