@@ -7,6 +7,8 @@ import { ReactSortable } from "react-sortablejs";
 import { ConfigService } from "../../../assets/lib/kookit-extra-browser.min";
 import toast from "react-hot-toast";
 import DeletePopup from "../deletePopup";
+import { isMobileScreen } from "../../../utils/commonMobile";
+import * as mobileBack from "../../../utils/mobileBack";
 class SortShelfDialog extends React.Component<
   SortShelfDialogProps,
   SortShelfDialogState
@@ -34,7 +36,30 @@ class SortShelfDialog extends React.Component<
         return { name: item, id: index };
       }),
     });
+
+    // If opened on mobile, push a mobile back entry so hardware back closes this dialog
+    if (isMobileScreen()) {
+      mobileBack.push("sort_shelf", () => {
+        try {
+          this.props.handleSortShelfDialog(false);
+        } catch (e) {
+          console.error("mobileBack sortShelf onPop error:", e);
+        }
+      });
+    }
   }
+
+  componentWillUnmount(): void {
+    // remove mobile back entry when dialog unmounts
+    if (isMobileScreen()) {
+      try {
+        mobileBack.pop();
+      } catch (e) {
+        console.error("mobileBack pop error:", e);
+      }
+    }
+  }
+
   handleClose = () => {
     this.props.handleSortShelfDialog(false);
   };
@@ -158,7 +183,7 @@ class SortShelfDialog extends React.Component<
                       defaultValue={item.name}
                       onChange={(event) => {
                         const sanitizedValue = event.target.value.replace(
-                          /[\[\]{}",:\/\\|<>*?]/g,
+                          /[\[\]{}\",:\/\\|<>*?]/g,
                           ""
                         );
                         this.setState({ newShelfName: sanitizedValue });
