@@ -14,6 +14,8 @@ import {
   moveBooksToTrash,
   parseBookDragData,
 } from "../../utils/reader/bookDrag";
+import { isMobileScreen } from "../../utils/commonMobile";
+import { openCreateShelfDialog } from "../../components/dialogs/createShelfDialog/openCreateShelfDialog";
 class Sidebar extends React.Component<SidebarProps, SidebarState> {
   private newShelfInput = React.createRef<HTMLInputElement>();
   constructor(props: SidebarProps) {
@@ -469,8 +471,12 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                       ? { display: "none", width: "70%" }
                       : { width: "60%" }
                   }
-                  onClick={() => {
-                    this.setState({ isCreateShelf: true });
+                  onClick={async () => {
+                    if (isMobileScreen()) {
+                      await openCreateShelfDialog(this.props.t);
+                    } else {
+                      this.setState({ isCreateShelf: true });
+                    }
                   }}
                 >
                   {this.props.t("New shelf")}
@@ -493,7 +499,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                   onChange={(event) => {
                     // Remove special characters from the shelf name
                     const sanitizedValue = event.target.value.replace(
-                      /[\[\]{}",:\/\\|<>*?]/g,
+                      /[\[\]\"\{\},:\/\\|<>*?]/g,
                       ""
                     );
                     this.setState({ newShelfName: sanitizedValue });

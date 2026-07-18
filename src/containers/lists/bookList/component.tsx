@@ -1,4 +1,6 @@
 import React from "react";
+import QuickAccess from "../../../components/mobileQuickAccess/component";
+import MobileShelfChips from "../../../components/mobileShelfChips/component";
 import "./booklist.css";
 import BookCardItem from "../../../components/bookCardItem";
 import BookListItem from "../../../components/bookListItem";
@@ -14,6 +16,8 @@ import Book from "../../../models/Book";
 import { isElectron } from "react-device-detect";
 import DatabaseService from "../../../utils/storage/databaseService";
 import { throttle } from "../../../utils/common";
+import { isMobileScreen } from "../../../utils/commonMobile";
+import { withRouter as withRouterAny } from "react-router-dom";
 declare var window: any;
 let currentBookMode = "home";
 function getBookCountPerPage() {
@@ -412,6 +416,7 @@ class BookList extends React.Component<BookListProps, BookListState> {
       return <Redirect to="/manager/empty" />;
     }
     const { books, bookMode } = this.handleBooks();
+    const isMobile = isMobileScreen();
     return (
       <>
         <div
@@ -477,6 +482,17 @@ class BookList extends React.Component<BookListProps, BookListState> {
               : {}
           }
         >
+          {isMobile && this.props.mode === "home" && (
+            <QuickAccess history={this.props.history} t={this.props.t} />
+          )}
++          {isMobile && this.props.mode === "shelf" && (
++            <MobileShelfChips
++              history={this.props.history}
++              t={this.props.t}
++              handleShelf={this.props.handleShelf}
++              handleMode={this.props.handleMode}
++            />
++          )}
           <div className="book-list-container">
             <ul
               className="book-list-item-box"
@@ -494,4 +510,4 @@ class BookList extends React.Component<BookListProps, BookListState> {
   }
 }
 
-export default withRouter(BookList as any);
+export default withRouterAny(BookList as any);
