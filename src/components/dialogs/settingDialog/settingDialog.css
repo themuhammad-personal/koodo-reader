@@ -22,6 +22,9 @@
     top: 0;
     border-radius: 0;
     flex-direction: column;
+    /* Respect safe area on iOS */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .setting-dialog-sidebar {
     width: 100% !important;
@@ -48,6 +51,10 @@
   .setting-dialog-sidebar-item {
     white-space: nowrap;
     flex-shrink: 0;
+    /* Larger touch target for mobile */
+    padding: 12px 18px;
+    font-size: 16px;
+    border-radius: 12px;
   }
   .setting-dialog-main {
     flex: 1;
@@ -60,6 +67,15 @@
     z-index: 30 !important;
     background-color: rgba(0, 0, 0, 0.35);
     border-radius: 50%;
+    width: 44px !important;
+    height: 44px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .setting-close {
+    margin: 0 !important;
+    font-size: 20px !important;
   }
 }
 .setting-dialog-sidebar {
@@ -102,6 +118,10 @@
 }
 .setting-dialog-sidebar-item:hover {
   opacity: 0.85;
+  background: rgba(0,0,0,0.04);
+}
+.setting-dialog-sidebar-item:active {
+  transform: translateY(1px);
 }
 .setting-dialog-sidebar-item.active {
   opacity: 1;
@@ -132,6 +152,13 @@
   padding: 22px 28px 10px 28px;
   flex-shrink: 0;
   padding-left: 20px;
+  /* Keep header visible when scrolling */
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 5;
+  /* Ensure touch accessibility */
+  padding-top: 12px;
 }
 .setting-dialog-title {
   font-size: 18px;
