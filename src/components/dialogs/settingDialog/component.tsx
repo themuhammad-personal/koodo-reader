@@ -19,10 +19,10 @@ import DictSetting from "../../../containers/settings/dictSetting";
 import MoreSetting from "../../../containers/settings/moreSetting";
 import ShortcutSetting from "../../../containers/settings/shortcutSetting";
 import { isElectron } from "react-device-detect";
-class SettingDialog extends React.Component<
-  SettingInfoProps,
-  SettingInfoState
-> {
+import { isMobileScreen } from "../../../utils/commonMobile";
+import * as mobileBack from "../../../utils/mobileBack";
+
+class SettingDialog extends React.Component<SettingInfoProps, SettingInfoState> {
   contentRef = React.createRef<HTMLDivElement>();
 
   constructor(props: SettingInfoProps) {
@@ -33,6 +33,29 @@ class SettingDialog extends React.Component<
     this.props.handleFetchPlugins();
     this.props.handleFetchDataSourceList();
     this.props.handleFetchDefaultSyncOption();
+
+    // mobile back integration
+    if (isMobileScreen()) {
+      mobileBack.push("setting", () => {
+        try {
+          this.props.handleSetting(false);
+          this.props.handleSettingMode("general");
+        } catch (e) {
+          console.error("mobileBack setting onPop error:", e);
+        }
+      });
+    }
+  }
+
+  componentWillUnmount(): void {
+    // remove mobile back entry when dialog unmounts
+    if (isMobileScreen()) {
+      try {
+        mobileBack.pop();
+      } catch (e) {
+        console.error("mobileBack pop error:", e);
+      }
+    }
   }
 
   componentDidUpdate(prevProps: SettingInfoProps): void {
@@ -101,7 +124,79 @@ class SettingDialog extends React.Component<
     }
   };
 
+  handleMobileBack = () => {
+    this.props.handleSetting(false);
+    this.props.handleSettingMode("general");
+    // pop mobile back entry immediately to avoid duplicate
+    try {
+      mobileBack.pop();
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  renderContent = () => {
+    return (
+      <div className="setting-dialog-info" ref={this.contentRef}>
+        {this.props.settingMode === "general" ? (
+          <GeneralSetting />
+        ) : this.props.settingMode === "reading" ? (
+          <ReadingSetting />
+        ) : this.props.settingMode === "shortcut" ? (
+          <ShortcutSetting />
+        ) : this.props.settingMode === "appearance" ? (
+          <AppearanceSetting />
+        ) : this.props.settingMode === "sync" ? (
+          <SyncSetting />
+        ) : this.props.settingMode === "account" ? (
+          <AccountSetting />
+        ) : this.props.settingMode === "data" ? (
+          <DataSetting />
+        ) : this.props.settingMode === "about" ? (
+          <AboutSetting />
+        ) : this.props.settingMode === "ai" ? (
+          <AISetting />
+        ) : this.props.settingMode === "background" ? (
+          <BackgroundSetting />
+        ) : this.props.settingMode === "font" ? (
+          <FontSetting />
+        ) : this.props.settingMode === "chapter" ? (
+          <ChapterSetting />
+        ) : this.props.settingMode === "text" ? (
+          <TextSetting />
+        ) : this.props.settingMode === "dict" ? (
+          <DictSetting />
+        ) : this.props.settingMode === "more" ? (
+          <MoreSetting />
+        ) : (
+          <PluginSetting />
+        )}
+      </div>
+    );
+  };
+
   render() {
+    const mobile = isMobileScreen();
+    if (mobile) {
+      return (
+        <div className="setting-dialog-mobile-container">
+          <div className="setting-dialog-mobile-header">
+            <button
+              className="setting-mobile-back"
+              onClick={this.handleMobileBack}
+              aria-label="back"
+            >
+              ←
+            </button>
+            <div className="setting-dialog-mobile-title">
+              <Trans>{this.getCurrentPageTitle()}</Trans>
+            </div>
+          </div>
+          {this.renderContent()}
+        </div>
+      );
+    }
+
     return (
       <div className="setting-dialog-container">
         {/* 左侧导航栏 */}
@@ -205,41 +300,7 @@ class SettingDialog extends React.Component<
             <span className="icon-close setting-close"></span>
           </div>
 
-          <div className="setting-dialog-info" ref={this.contentRef}>
-            {this.props.settingMode === "general" ? (
-              <GeneralSetting />
-            ) : this.props.settingMode === "reading" ? (
-              <ReadingSetting />
-            ) : this.props.settingMode === "shortcut" ? (
-              <ShortcutSetting />
-            ) : this.props.settingMode === "appearance" ? (
-              <AppearanceSetting />
-            ) : this.props.settingMode === "sync" ? (
-              <SyncSetting />
-            ) : this.props.settingMode === "account" ? (
-              <AccountSetting />
-            ) : this.props.settingMode === "data" ? (
-              <DataSetting />
-            ) : this.props.settingMode === "about" ? (
-              <AboutSetting />
-            ) : this.props.settingMode === "ai" ? (
-              <AISetting />
-            ) : this.props.settingMode === "background" ? (
-              <BackgroundSetting />
-            ) : this.props.settingMode === "font" ? (
-              <FontSetting />
-            ) : this.props.settingMode === "chapter" ? (
-              <ChapterSetting />
-            ) : this.props.settingMode === "text" ? (
-              <TextSetting />
-            ) : this.props.settingMode === "dict" ? (
-              <DictSetting />
-            ) : this.props.settingMode === "more" ? (
-              <MoreSetting />
-            ) : (
-              <PluginSetting />
-            )}
-          </div>
+          {this.renderContent()}
         </div>
       </div>
     );
