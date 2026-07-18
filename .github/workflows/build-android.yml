@@ -37,7 +37,20 @@ jobs:
           cp android-debug.keystore ~/.android/debug.keystore
 
       - name: Build production web bundle
-        run: yarn build
+        id: web_build
+        env:
+          CI: false
+        run: yarn build 2>&1 | tee /tmp/build.log
+
+      - name: Report build log on failure
+        if: failure() && steps.web_build.outcome == 'failure'
+        run: |
+          BODY=$(tail -c 60000 /tmp/build.log | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/check-runs" \
+            -d "{\"name\":\"build-log\",\"head_sha\":\"${{ github.sha }}\",\"status\":\"completed\",\"conclusion\":\"failure\",\"output\":{\"title\":\"build log\",\"summary\":\"build failed\",\"text\":${BODY}}}"
 
       - name: Install Capacitor
         run: yarn add --dev --ignore-scripts --network-timeout 600000 @capacitor/core@^6 @capacitor/android@^6 @capacitor/cli@^6
