@@ -1,5 +1,6 @@
 import React from "react";
 import QuickAccess from "../../../components/mobileQuickAccess/component";
+import MobileShelfChips from "../../../components/mobileShelfChips/component";
 import "./booklist.css";
 import BookCardItem from "../../../components/bookCardItem";
 import BookListItem from "../../../components/bookListItem";
@@ -484,6 +485,14 @@ class BookList extends React.Component<BookListProps, BookListState> {
           {isMobile && this.props.mode === "home" && (
             <QuickAccess history={this.props.history} t={this.props.t} />
           )}
++          {isMobile && this.props.mode === "shelf" && (
++            <MobileShelfChips
++              history={this.props.history}
++              t={this.props.t}
++              handleShelf={this.props.handleShelf}
++              handleMode={this.props.handleMode}
++            />
++          )}
           <div className="book-list-container">
             <ul
               className="book-list-item-box"
