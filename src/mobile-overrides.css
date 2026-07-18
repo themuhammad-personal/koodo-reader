@@ -1,0 +1,27 @@
+@media (max-width: 700px) {
+  .sidebar {
+    display: none !important;
+  }
+  .header {
+    margin-left: 0 !important;
+  }
+  .book-list-container-parent {
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100% - 125px - 56px) !important;
+  }
+  .book-list-header {
+    left: 0 !important;
+    width: 100% !important;
+  }
+  .note-list-container-parent {
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100% - 75px - 56px) !important;
+  }
+  .empty-page-container {
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 75px - 56px) !important;
+  }
+}

@@ -1,5 +1,6 @@
 import React from "react";
 import Sidebar from "../../containers/sidebar";
+import MobileNav from "../../containers/mobileNav";
 import Header from "../../containers/header";
 import DeleteDialog from "../../components/dialogs/deleteDialog";
 import EditDialog from "../../components/dialogs/editDialog";
@@ -285,6 +286,7 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
           )}
         </div>
         <Sidebar />
+        <MobileNav />
         <Toaster
           toastOptions={{
             style: {
