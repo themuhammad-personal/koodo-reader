@@ -1,6 +1,6 @@
-import { ConfigService } from "../../assets/lib/kookit-extra-browser.min";
+import { ConfigService } from "../../../assets/lib/kookit-extra-browser.min";
 import toast from "react-hot-toast";
-import { isMobileScreen } from "../../utils/commonMobile";
+import { isMobileScreen } from "../../../utils/commonMobile";
 import { showMobileCreateShelf } from "./mobileCreateShelf";
 
 declare var window: any;
