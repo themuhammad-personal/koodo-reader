@@ -14,6 +14,35 @@ function onPopState(_e: PopStateEvent) {
 
 if (typeof window !== "undefined") {
   window.addEventListener("popstate", onPopState);
+
+  // Capacitor physical back button (Android).
+  // Lazily imported so the web bundle stays intact when the package is absent.
+  const cap = (window as any).Capacitor;
+  if (cap && cap.getPlatform() === "android") {
+    import("@capacitor/app")
+      .then(({ App }) => {
+        App.addListener("backButton", ({ canGoBack }) => {
+          if (stack.length > 0) {
+            // Let our own stack handle the back action.
+            const top = stack.pop();
+            try {
+              top?.onPop();
+            } catch (e) {
+              console.error("mobileBack Capacitor onPop error:", e);
+            }
+          } else if (canGoBack) {
+            // Fall back to normal browser history navigation.
+            window.history.back();
+          } else {
+            // No history left — minimize the app instead of killing it.
+            import("@capacitor/app").then(({ App: A }) => A.minimizeApp());
+          }
+        });
+      })
+      .catch((err) => {
+        console.warn("mobileBack: @capacitor/app not available:", err);
+      });
+  }
 }
 
 export function push(key: string, onPop: () => void) {

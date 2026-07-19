@@ -1,0 +1,57 @@
+.mobile-shelf-chips {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .mobile-shelf-chips {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .mobile-shelf-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shelf-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    white-space: nowrap;
+    outline: none;
+    transition: background-color 0.15s ease;
+  }
+
+  .shelf-chip:active {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .shelf-chip.add-chip {
+    border-style: dashed;
+    color: rgba(212, 83, 126, 0.9);
+    border-color: rgba(212, 83, 126, 0.4);
+    background-color: transparent;
+    font-size: 18px;
+    padding: 4px 14px;
+    line-height: 1;
+  }
+
+  .shelf-chip.add-chip:active {
+    background-color: rgba(212, 83, 126, 0.1);
+  }
+}

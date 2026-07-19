@@ -2,8 +2,13 @@
   "appId": "xyz.koodoreader.selfbuild",
   "appName": "Koodo Reader (Self-build)",
   "webDir": "build",
-  "bundledWebRuntime": false,
   "android": {
-    "allowMixedContent": true
+    "allowMixedContent": true,
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
   }
 }

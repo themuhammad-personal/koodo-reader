@@ -57,8 +57,11 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/comments" \
             -d "{\"body\": ${BODY}}" || echo "Failed to post build log comment"
 
-      - name: Install Capacitor
-        run: yarn add --dev --ignore-scripts --network-timeout 600000 @capacitor/core@^6 @capacitor/android@^6 @capacitor/cli@^6
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
 
       - name: Add Android platform
         run: npx cap add android
@@ -66,11 +69,14 @@ jobs:
       - name: Sync web build into Android project
         run: npx cap sync android
 
+      - name: Write local.properties for Gradle
+        run: echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+
       - name: Build debug APK
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
