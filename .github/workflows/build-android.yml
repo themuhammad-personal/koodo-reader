@@ -40,7 +40,9 @@ jobs:
         id: web_build
         env:
           CI: false
-        run: yarn build 2>&1 | tee /tmp/build.log
+        run: |
+          set -o pipefail
+          yarn build 2>&1 | tee /tmp/build.log
 
       - name: Report build log on failure
         if: failure() && steps.web_build.outcome == 'failure'
