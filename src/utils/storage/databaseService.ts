@@ -6,6 +6,32 @@ import { ConfigService } from "../../assets/lib/kookit-extra-browser.min";
 import { LocalFileManager } from "../file/localFile";
 declare var window: any;
 
+/**
+ * Returns true when running inside a Capacitor-wrapped Android WebView.
+ * The File System Access API (showDirectoryPicker etc.) is unavailable there,
+ * so we must always use localforage instead of LocalFileManager.
+ */
+function isCapacitorAndroid(): boolean {
+  try {
+    return (
+      typeof window !== "undefined" &&
+      !!(window as any).Capacitor &&
+      (window as any).Capacitor.getPlatform() === "android"
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** True when we should use LocalFileManager (desktop web with FSAA, never on Android). */
+function shouldUseLocal(): boolean {
+  return (
+    !isCapacitorAndroid() &&
+    ConfigService.getItem("isUseLocal") === "yes" &&
+    "showDirectoryPicker" in window
+  );
+}
+
 class DatabaseService {
   static async getDbBuffer(dbName: string) {
     let sqlUtil = new SqlUtil();
@@ -26,7 +52,7 @@ class DatabaseService {
         });
       return records;
     } else {
-      if (ConfigService.getItem("isUseLocal") === "yes") {
+      if (shouldUseLocal()) {
         let sqlUtil = new SqlUtil();
         let dbBuffer = await LocalFileManager.readFile(
           dbName + ".db",
@@ -74,7 +100,7 @@ class DatabaseService {
         }
       }
     } else {
-      if (ConfigService.getItem("isUseLocal") === "yes") {
+      if (shouldUseLocal()) {
         let sqlUtil = new SqlUtil();
         let dbBuffer = await sqlUtil.JsonToDbBuffer(records, dbName);
         await LocalFileManager.saveFile(dbName + ".db", dbBuffer, "config");
@@ -120,7 +146,7 @@ class DatabaseService {
         storagePath: getStorageLocation(),
       });
     } else {
-      if (ConfigService.getItem("isUseLocal") === "yes") {
+      if (shouldUseLocal()) {
         await LocalFileManager.deleteFile(dbName + ".db", "config");
       } else {
         await localforage.removeItem(dbName);

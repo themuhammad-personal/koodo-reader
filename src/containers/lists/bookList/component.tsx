@@ -8,7 +8,7 @@ import BookCoverItem from "../../../components/bookCoverItem";
 import BookModel from "../../../models/Book";
 import { BookListProps, BookListState } from "./interface";
 import { ConfigService } from "../../../assets/lib/kookit-extra-browser.min";
-import { Redirect, withRouter } from "react-router-dom";
+import { Redirect, withRouter as withRouterAny } from "react-router-dom";
 import ViewMode from "../../../components/viewMode";
 import SelectBook from "../../../components/selectBook";
 import { Trans } from "react-i18next";
@@ -17,7 +17,6 @@ import { isElectron } from "react-device-detect";
 import DatabaseService from "../../../utils/storage/databaseService";
 import { throttle } from "../../../utils/common";
 import { isMobileScreen } from "../../../utils/commonMobile";
-import { withRouter as withRouterAny } from "react-router-dom";
 declare var window: any;
 let currentBookMode = "home";
 function getBookCountPerPage() {

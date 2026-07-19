@@ -10,10 +10,12 @@ export interface NoteListProps {
   tabMode: string;
   handleFetchNotes: () => void;
   t: (title: string) => string;
+  history?: any;
 }
 export interface NoteListState {
   tag: string[];
   currentSelectedBook: string;
   bookNamesMap: { [key: string]: string };
   cardList: NoteModel[];
+  showTagFilter: boolean;
 }
