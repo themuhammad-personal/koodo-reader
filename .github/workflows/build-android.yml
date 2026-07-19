@@ -3,6 +3,9 @@ name: Build Android APK (self-build, unsigned)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -48,11 +51,11 @@ jobs:
         if: failure() && steps.web_build.outcome == 'failure'
         run: |
           BODY=$(tail -c 60000 /tmp/build.log | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
-          curl -s -X POST \
+          curl -sf -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/check-runs" \
-            -d "{\"name\":\"build-log\",\"head_sha\":\"${{ github.sha }}\",\"status\":\"completed\",\"conclusion\":\"failure\",\"output\":{\"title\":\"build log\",\"summary\":\"build failed\",\"text\":${BODY}}}"
+            "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/comments" \
+            -d "{\"body\": ${BODY}}" || echo "Failed to post build log comment"
 
       - name: Install Capacitor
         run: yarn add --dev --ignore-scripts --network-timeout 600000 @capacitor/core@^6 @capacitor/android@^6 @capacitor/cli@^6
